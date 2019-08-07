@@ -1,6 +1,8 @@
 package entity
 
 import (
+	"fmt"
+	"math"
 	"math/rand"
 
 	"github.com/RyoNkmr/rpg/pkg"
@@ -12,21 +14,37 @@ type Dice struct {
 	rnd    *rand.Rand
 }
 
-func NewDice(number uint16, dside uint16) *Dice {
-	side := dside + 1
+func NewDice(number uint16, side uint16) *Dice {
 	rnd := pkg.GetRand()
 	return &Dice{number, side, rnd}
 }
 
-func (d *Dice) castOne() uint32 {
-	return uint32(d.rnd.Int31n(int32(d.side)))
+func (d *Dice) castOne() uint64 {
+	return uint64(d.rnd.Int63n(int64(d.side)) + 1)
 }
 
 func (d *Dice) Cast() (v uint64) {
 	cnt := d.number
 	for cnt > 0 {
-		v = v + uint64(d.castOne())
+		v = v + d.castOne()
 		cnt--
 	}
 	return v
+}
+
+func (d *Dice) PCast() (v uint64, percent uint64) {
+	v = d.Cast()
+	return v, d.GetPercent(v)
+}
+
+func (d *Dice) GetPercent(v uint64) uint64 {
+	return uint64(math.Floor(float64(v) / float64(d.GetMax()) * 100))
+}
+
+func (d *Dice) GetMax() uint64 {
+	return uint64(d.number) * uint64(d.side)
+}
+
+func (d *Dice) String() string {
+	return fmt.Sprintf("%dd%d", d.number, d.side)
 }

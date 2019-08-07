@@ -7,10 +7,12 @@ import (
 )
 
 func main() {
-	dice := entity.NewDice(4, 5)
+	dice := entity.NewDice(12, 19)
+	fmt.Println(dice.String())
+	fmt.Println(dice.GetMax())
 	fmt.Println(dice.Cast())
 	fmt.Println(dice.Cast())
-	fmt.Println(dice.Cast())
-	fmt.Println(dice.Cast())
-	fmt.Println(dice.Cast())
+	fmt.Println(dice.PCast())
+	fmt.Println(dice.PCast())
+	fmt.Println(dice.PCast())
 }

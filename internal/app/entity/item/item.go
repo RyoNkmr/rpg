@@ -1,6 +1,6 @@
 package item
 
-type item struct {
+type Item struct {
 	weight uint16
 	side   uint16
 }

@@ -1,21 +1,20 @@
 package player
 
-type player struct {
-	hp     uint64
-	hpmax  uint64
-	mp     uint64
-	mpmax  uint64
-	hunger uint64
-	items  []*Item
-}
+import (
+	"github.com/RyoNkmr/rpg/internal/app/entity/actor/player/class"
+	"github.com/RyoNkmr/rpg/internal/app/entity/actor/player/race"
+)
 
-func NewPlayer(hp uint64, mp uint64) *player {
-	return &player{hp, mp}
+type player struct {
+	hp     int64
+	hpmax  int64
+	mp     int64
+	mpmax  int64
+	hunger int64
+	// skills []*skill.Skill
 }
 
 type Player interface {
-	Attack(*Enemy)
-	ConfusedAttack(*Player)
-	PowerAttack(*Enemy)
-	SpecialAttack(*Enemy)
+	race.Race
+	class.Class
 }

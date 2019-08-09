@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/RyoNkmr/rpg/internal/app/entity/actor"
 	"github.com/RyoNkmr/rpg/internal/app/entity/actor/enemy"
@@ -10,12 +11,6 @@ import (
 	"github.com/RyoNkmr/rpg/internal/app/entity/actor/player/race"
 )
 
-func DumpMessages(ms []actor.Message) {
-	for _, m := range ms {
-		fmt.Println(m)
-	}
-}
-
 func main() {
 	enemy := enemy.NewSnake()
 
@@ -23,26 +18,48 @@ func main() {
 	class := playerclass.NewWarrior()
 	player := player.NewPlayer(race, class)
 
+	line()
 	fmt.Println(player.GetStats())
 	fmt.Println(enemy.GetStats())
+	line()
 
-	for i := 0; i < 20; i++ {
-		pad, ams := player.Attack(enemy)
-		dms, isEnemyDead := enemy.Damage(pad)
-		DumpMessages(append(ams, dms))
-		fmt.Println(enemy.GetStats())
-		if isEnemyDead {
-			fmt.Println("clear")
+	for {
+		time.Sleep(600 * time.Millisecond)
+		if handleTurn(player, enemy, "won") {
 			break
 		}
-
-		ead, ams := enemy.Attack(player)
-		dms, isPlayerDead := player.Damage(ead)
-		DumpMessages(append(ams, dms))
-		fmt.Println(player.GetStats())
-		if isPlayerDead {
-			fmt.Println("game over")
+		time.Sleep(600 * time.Millisecond)
+		if handleTurn(enemy, player, "gameover") {
 			break
 		}
 	}
+}
+
+func dumpMessages(ms []actor.Message) {
+	for _, m := range ms {
+		time.Sleep(600 * time.Millisecond)
+		fmt.Println(m)
+	}
+}
+
+func handleTurn(attacker, receiver actor.Actor, deadMes string) bool {
+	pad, ams := attacker.Attack(receiver)
+	dms, isReceiverDead := receiver.Damage(pad)
+	dumpMessages(append(ams, dms))
+	lines(receiver.GetStats())
+	if isReceiverDead {
+		fmt.Println(deadMes)
+	}
+	return isReceiverDead
+}
+
+func line() {
+	fmt.Println("----------------------")
+}
+
+func lines(m string) {
+	time.Sleep(600 * time.Millisecond)
+	fmt.Println("----------------------")
+	fmt.Println(m)
+	fmt.Println("----------------------")
 }

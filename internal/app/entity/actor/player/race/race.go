@@ -1,6 +1,9 @@
 package race
 
-import "math"
+import (
+	"fmt"
+	"math"
+)
 
 type Level = uint16
 type Exp = uint64
@@ -17,6 +20,7 @@ type race struct {
 }
 
 type Race interface {
+	fmt.Stringer
 	GetCurrentLevel() Level
 	GetExpToLevel(Level) Exp
 }

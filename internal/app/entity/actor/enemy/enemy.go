@@ -1,18 +1,32 @@
 package enemy
 
-import "github.com/RyoNkmr/rpg/internal/app/entity/actor/player"
+import (
+	"fmt"
 
-type enemy struct {
-	hp uint64
-	mp uint64
-}
+	"github.com/RyoNkmr/rpg/internal/app/entity/actor"
+)
 
-func NewEnemy(hp uint64, mp uint64) *enemy {
-	return &enemy{hp, mp}
+type stats struct {
+	name string
+	Hp   int64
 }
 
 type Enemy interface {
-	Attack(*player.Player)
-	ConfusedAttack(*Enemy)
-	SpecialAttack(*player.Player)
+	actor.Actor
+	// Attack(*player.Player) (damage actor.Damage, message []string)
+	// Damage(actor.Damage) (message string, isDead bool)
+}
+
+func (e *stats) Damage(d actor.Damage) (message string, isDead bool) {
+	message = fmt.Sprintf("%s take %d damage", e.GetName(), d)
+	e.Hp -= int64(d)
+	return message, e.Hp <= 0
+}
+
+func (e *stats) GetName() string {
+	return e.name
+}
+
+func (e *stats) GetStats() string {
+	return fmt.Sprintf("%s: Hp: %d", e.name, e.Hp)
 }

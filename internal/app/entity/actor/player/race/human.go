@@ -14,3 +14,7 @@ func NewHuman() *human {
 	}
 	return &human{stats}
 }
+
+func (r *human) String() string {
+	return "human"
+}

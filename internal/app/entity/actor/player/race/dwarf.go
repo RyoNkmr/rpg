@@ -21,3 +21,7 @@ func NewDwarf() *dwarf {
 	}
 	return &dwarf{stats}
 }
+
+func (r *dwarf) String() string {
+	return "dwarf"
+}

@@ -13,7 +13,7 @@ type snake struct {
 func NewSnake() *snake {
 	d := dice.NewDice(3, 6)
 	e := &stats{
-		Hp:   int64(d.Cast()),
+		hp:   int64(d.Cast()),
 		name: "snake",
 	}
 	return &snake{

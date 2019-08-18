@@ -1,0 +1,30 @@
+linters-settings:
+  goimports:
+    local-prefixes: github.com/:yoNkmr/rpg
+
+linters:
+  enable:
+    - stylecheck
+    # - interfacer - to avoid conflicting "stringer"
+    - gosec
+    - dupl
+    - goconst
+    - gocyclo
+    - goimports
+    - maligned
+    - depguard
+    - misspell
+    - unparam
+    - prealloc
+    - scopelint
+    - govet
+    - errcheck
+    - staticcheck
+    - unused
+  disable-all: true
+
+issues:
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - goimports

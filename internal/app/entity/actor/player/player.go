@@ -22,7 +22,6 @@ type player struct {
 
 type Player interface {
 	actor.Actor
-	// Attack(actor.Actor) (actor.Damage, []actor.Message)
 	// Damage(actor.Damage) (message actor.Message, isDead bool)
 }
 

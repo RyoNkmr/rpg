@@ -18,7 +18,7 @@ type Enemy interface {
 }
 
 func (e *stats) Damage(d actor.Damage) (message string, isDead bool) {
-	message = fmt.Sprintf("%s take %d damage", e.GetName(), d)
+	message = fmt.Sprintf("%s takes %d damage", e.GetName(), d)
 	e.Hp -= int64(d)
 	return message, e.Hp <= 0
 }

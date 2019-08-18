@@ -28,6 +28,11 @@ func (e *snake) Attack(t actor.Actor) (d actor.Damage, ms []actor.Message) {
 	d = 1
 
 	if e.attackDice.Cast() >= 3 {
+		ms = append(ms, "snake bites you.")
+		d += 1
+	}
+
+	if e.attackDice.Cast() == 4 {
 		ms = append(ms, "snake crushes you.")
 		d += 2
 	}

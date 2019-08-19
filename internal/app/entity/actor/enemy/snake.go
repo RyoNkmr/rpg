@@ -11,10 +11,14 @@ type snake struct {
 }
 
 func NewSnake() *snake {
-	d := dice.NewDice(3, 6)
+	// d := dice.NewDice(3, 6)
+	// hp := int64(d.Cast())
 	e := &stats{
-		hp:   int64(d.Cast()),
+		// hp:   hp,
+		hp:   1,
 		name: "snake",
+		// exp:  actor.Exp(hp),
+		exp: 11,
 	}
 	return &snake{
 		stats:      e,
@@ -34,7 +38,7 @@ func (e *snake) Attack(t actor.Actor) (d actor.Damage, ms []actor.Message) {
 
 	if e.attackDice.Cast() == 4 {
 		ms = append(ms, "snake crushes you.")
-		d += 2
+		d += 1
 	}
 
 	return d, ms

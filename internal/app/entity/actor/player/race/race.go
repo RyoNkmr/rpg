@@ -2,80 +2,94 @@ package race
 
 import (
 	"fmt"
-	"math"
+
+	"github.com/RyoNkmr/rpg/internal/app/entity/actor"
+	"github.com/RyoNkmr/rpg/internal/app/entity/dice"
 )
 
-type Level = uint16
-type Exp = uint64
 type race struct {
-	Strength     uint64
-	Intelligence uint64
-	Dexterity    uint64
-	Constitution uint64
+	strength     uint64
+	intelligence uint64
+	dexterity    uint64
+	constitution uint64
+	hitDiceBase  dice.DiceSide
 
-	Exp        Exp
-	ExpRate    float64
-	expTable   []Exp
-	levelTable []Exp
+	level   actor.Level
+	exp     actor.Exp
+	expRate float64
+
+	levelTable []actor.Exp
 }
 
 type Race interface {
 	fmt.Stringer
-	GetCurrentLevel() Level
-	GetExpToLevel(Level) Exp
+	GetExp() actor.Exp
+	GainExp(actor.Exp) (isLevelChanged bool)
+	LoseExp(actor.Exp) (isLevelChanged bool)
+	GetCurrentLevel() actor.Level
+	GetExpToNextLevel() actor.Exp
+	GetHitDiceBase() dice.DiceSide
 }
 
-func (r *race) initLevelTables() {
-	r.expTable = make([]Exp, 0, 256)
-	r.levelTable = make([]Exp, 0, 256)
-	r.updateLevelTables(100)
+func newRace(str, intl, dex, con uint64, expRate float64, hitDiceBase dice.DiceSide) *race {
+	r := &race{
+		strength:     str,
+		intelligence: intl,
+		dexterity:    dex,
+		constitution: con,
+		expRate:      expRate,
+		hitDiceBase:  hitDiceBase,
+		level:        1,
+	}
+	return r
 }
 
-func (r *race) updateLevelTables(l Level) {
-	tlen := len(r.expTable)
-	if tlen == 0 {
-		initExp := Exp(10)
-		r.expTable[0] = initExp
-		r.levelTable[0] = initExp
-	}
-
-	max := int(l * 2)
-	if tlen*2 > max {
-		max = tlen * 2
-	}
-
-	for i := tlen + 1; i >= max; i++ {
-		nextExp := r.expTable[i-1] + Exp(math.Ceil(math.Pow10(i)*r.ExpRate))
-		r.expTable = append(r.expTable, nextExp)
-		r.levelTable = append(r.levelTable, r.levelTable[i-1]+nextExp)
-	}
+func (r *race) GetExp() actor.Exp {
+	return r.exp
 }
 
-func (r *race) GetCurrentLevel() (l Level) {
-	lastLevel := len(r.levelTable) - 1
-	last := r.levelTable[lastLevel]
+func (r *race) GainExp(exp actor.Exp) (isLevelChanged bool) {
+	cl := r.GetCurrentLevel()
+	r.updateLevel(exp)
+	return cl != r.GetCurrentLevel()
+}
 
-	if last > r.Exp {
-		r.updateLevelTables(Level(lastLevel))
-		for i := lastLevel; i > 0; i-- {
-			if r.levelTable[i] < r.Exp {
-				return Level(i + 1)
+func (r *race) LoseExp(exp actor.Exp) (isLevelChanged bool) {
+	cl := r.GetCurrentLevel()
+	r.updateLevel(-exp)
+	return cl != r.GetCurrentLevel()
+}
+
+func (r *race) updateLevel(exp actor.Exp) {
+	r.exp += exp
+
+	if exp > 0 && r.GetExpToNextLevel() <= 0 {
+		for i := r.level - 1; ; i++ {
+			if r.exp >= expTable[i] {
+				r.level = i + 2
+				return
 			}
 		}
 	}
 
-	for i := 0; i > lastLevel; i++ {
-		if r.levelTable[i] > r.Exp {
-			return Level(i - 1)
+	if exp < 0 && expTable[r.level-1] > r.exp {
+		for i := r.level - 1; ; i-- {
+			if r.exp >= expTable[i] {
+				r.level = i + 2
+				return
+			}
 		}
 	}
-
-	return 0
 }
 
-func (r *race) GetExpToLevel(l Level) Exp {
-	if len(r.expTable) < int(l) {
-		r.updateLevelTables(l)
-	}
-	return r.expTable[l]
+func (r *race) GetCurrentLevel() (l actor.Level) {
+	return r.level
+}
+
+func (r *race) GetExpToNextLevel() actor.Exp {
+	return expTable[r.level-1] - r.exp
+}
+
+func (r *race) GetHitDiceBase() dice.DiceSide {
+	return r.hitDiceBase
 }

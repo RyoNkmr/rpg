@@ -8,6 +8,9 @@ GENERATED_FILES := $(GENERATED_STRINGER_FILES) $(GENERATED_MOCKGEN_FILES) $(GENE
 
 .PHONY = run build
 
+%.go:
+	generate
+
 run:
 	go run ./cmd/main.go
 

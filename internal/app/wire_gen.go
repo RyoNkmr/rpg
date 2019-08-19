@@ -20,10 +20,10 @@ func Inject(player2 player.Player) (controller.RootController, error) {
 	mainPresenter := presenter.NewMainPresenter(application)
 	statusPresenter := presenter.NewStatusPresenter(player2)
 	inventoryPresenter := presenter.NewInventoryPresenter()
-	attackUsecase := usecase.NewAttackUsecase(mainPresenter, statusPresenter, inventoryPresenter)
+	battleUsecase := usecase.NewBattleUsecase(mainPresenter, statusPresenter, inventoryPresenter)
 	commandPresenter := presenter.NewCommandPresenter()
 	rootPresenter := presenter.NewRootPresenter(application, statusPresenter, mainPresenter, commandPresenter, inventoryPresenter)
 	systemUsecase := usecase.NewSystemUsecase(rootPresenter, statusPresenter, mainPresenter)
-	rootController := controller.NewRootController(player2, attackUsecase, systemUsecase)
+	rootController := controller.NewRootController(player2, battleUsecase, systemUsecase)
 	return rootController, nil
 }

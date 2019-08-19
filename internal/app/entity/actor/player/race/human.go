@@ -5,13 +5,14 @@ type human struct {
 }
 
 func NewHuman() *human {
-	stats := &race{
-		Strength:     8,
-		Intelligence: 8,
-		Dexterity:    8,
-		Constitution: 8,
-		ExpRate:      0.9,
-	}
+	stats := newRace(
+		8,
+		8,
+		8,
+		8,
+		0.9,
+		10,
+	)
 	return &human{stats}
 }
 

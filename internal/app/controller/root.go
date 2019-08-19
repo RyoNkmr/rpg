@@ -11,7 +11,7 @@ import (
 
 type rootController struct {
 	player player.Player
-	au     usecase.AttackUsecase
+	battle usecase.BattleUsecase
 	system usecase.SystemUsecase
 	d      dice.Dice
 }
@@ -20,11 +20,11 @@ type RootController interface {
 	Run() error
 }
 
-func NewRootController(player player.Player, au usecase.AttackUsecase, system usecase.SystemUsecase) *rootController {
+func NewRootController(player player.Player, battle usecase.BattleUsecase, system usecase.SystemUsecase) *rootController {
 	d := dice.NewDice(1, 3)
 	return &rootController{
 		player,
-		au,
+		battle,
 		system,
 		d,
 	}
@@ -56,11 +56,11 @@ func (c *rootController) run() {
 func (c *rootController) handleBattle(enemy enemy.Enemy) {
 	for {
 		c.sleep()
-		if c.au.HandleAttack(c.player, enemy, "won") {
+		if c.battle.HandleAttack(c.player, enemy, "won") {
 			return
 		}
 		c.sleep()
-		if c.au.HandleAttack(enemy, c.player, "gameover") {
+		if c.battle.HandleAttack(enemy, c.player, "gameover") {
 			return
 		}
 	}

@@ -9,7 +9,7 @@ type baseValueDice struct {
 	base DiceValue
 }
 
-func NewBaseValueDice(number DiceNumber, side uint16, base DiceValue) *baseValueDice {
+func NewBaseValueDice(number DiceNumber, side DiceSide, base DiceValue) *baseValueDice {
 	dice := NewDice(number, side)
 	return &baseValueDice{dice, base}
 }

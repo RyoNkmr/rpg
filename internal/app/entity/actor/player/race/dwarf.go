@@ -12,13 +12,14 @@ func NewDwarf() *dwarf {
 	dexd := dice.NewBaseValueDice(2, 4, 5)
 	cond := dice.NewBaseValueDice(2, 3, 8)
 
-	stats := &race{
-		Strength:     strd.Cast(),
-		Intelligence: intd.Cast(),
-		Dexterity:    dexd.Cast(),
-		Constitution: cond.Cast(),
-		ExpRate:      1.2,
-	}
+	stats := newRace(
+		strd.Cast(),
+		intd.Cast(),
+		dexd.Cast(),
+		cond.Cast(),
+		1.2,
+		11,
+	)
 	return &dwarf{stats}
 }
 

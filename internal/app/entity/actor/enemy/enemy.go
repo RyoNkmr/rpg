@@ -12,10 +12,12 @@ type stats struct {
 	hpmax actor.Hp
 	sp    actor.Sp
 	spmax actor.Sp
+	exp   actor.Exp
 }
 
 type Enemy interface {
 	actor.Actor
+	GetExp() actor.Exp
 }
 
 func (s *stats) IsFriend() bool {
@@ -42,4 +44,8 @@ func (e *stats) GetStatsString() string {
 
 func (e *stats) GetStats() (hp, maxHp actor.Hp, sp, maxSp actor.Sp, hunger actor.Hunger) {
 	return e.hp, e.hpmax, e.sp, e.spmax, 0
+}
+
+func (e *stats) GetExp() actor.Exp {
+	return e.exp
 }

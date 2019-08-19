@@ -25,15 +25,21 @@ func (p *statusPresenter) GetView() *tview.Table {
 }
 
 func (p *statusPresenter) Update() {
+	level := p.player.GetCurrentLevel()
+	exp := p.player.GetExpToNextLevel()
 	hp, hpmax, sp, spmax, hunger := p.player.GetStats()
 
 	data := [...][2]string{
+		{"Level", fmt.Sprintf("%d", level)},
+		{"Next Level", fmt.Sprintf("%d", exp)},
 		{"Hp", fmt.Sprintf("%d / %d", hp, hpmax)},
 		{"Sp", fmt.Sprintf("%d / %d", sp, spmax)},
 		{"Hunger", fmt.Sprintf("%d", hunger)},
 	}
 
 	colors := [...][2]tcell.Color{
+		{tcell.ColorWhite, tcell.ColorWhite},
+		{tcell.ColorWhite, tcell.ColorWhite},
 		{tcell.ColorWhite, getPercentColor(hp, hpmax)},
 		{tcell.ColorWhite, getPercentColor(sp, spmax)},
 		{tcell.ColorWhite, getPercentColor(hunger, 100)},

@@ -3,8 +3,8 @@ package usecase
 import "github.com/google/wire"
 
 var UsecaseSet = wire.NewSet(
-	NewAttackUsecase,
+	NewBattleUsecase,
 	NewSystemUsecase,
-	wire.Bind(new(AttackUsecase), new(*attackUsecase)),
+	wire.Bind(new(BattleUsecase), new(*battleUsecase)),
 	wire.Bind(new(SystemUsecase), new(*systemUsecase)),
 )

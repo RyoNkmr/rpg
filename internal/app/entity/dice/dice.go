@@ -11,10 +11,11 @@ import (
 type DiceValue = uint64
 type DiceNumber uint16
 type DicePer uint16
+type DiceSide uint16
 
 type dice struct {
 	number DiceNumber
-	side   uint16
+	side   DiceSide
 	rnd    *rand.Rand
 }
 
@@ -26,7 +27,7 @@ type Dice interface {
 	GetMix() DiceValue
 }
 
-func NewDice(number DiceNumber, side uint16) *dice {
+func NewDice(number DiceNumber, side DiceSide) *dice {
 	rnd := pkg.GetRand()
 	return &dice{number, side, rnd}
 }

@@ -7,6 +7,9 @@ type Hp = int64
 type Sp = int64
 type Hunger = int64
 
+type Level = uint16
+type Exp = int64
+
 type Actor interface {
 	Attack(Actor) (Damage, []Message)
 	Damage(Damage) (message Message, isDead bool)

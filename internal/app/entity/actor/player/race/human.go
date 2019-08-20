@@ -10,7 +10,7 @@ func NewHuman() *human {
 		8,
 		8,
 		8,
-		0.9,
+		1.0,
 		10,
 	)
 	return &human{stats}

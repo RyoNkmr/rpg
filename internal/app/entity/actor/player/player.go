@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/RyoNkmr/rpg/internal/app/entity/actor"
+	"github.com/RyoNkmr/rpg/internal/app/entity/actor/effect"
 	"github.com/RyoNkmr/rpg/internal/app/entity/actor/player/playerclass"
 	"github.com/RyoNkmr/rpg/internal/app/entity/actor/player/race"
 	"github.com/RyoNkmr/rpg/internal/app/entity/dice"
@@ -21,6 +22,7 @@ type player struct {
 
 	hitDice       dice.Dice
 	gainedHpTable []actor.Hp
+	effects       effect.EffectMap
 }
 
 type Player interface {
@@ -33,7 +35,6 @@ type Player interface {
 
 func NewPlayer(race race.Race, class playerclass.PlayerClass) *player {
 	hitDice := dice.NewDice(1, race.GetHitDiceBase()+class.GetHitDiceBonus())
-
 	return &player{
 		hp:      10,
 		hpmax:   10,
@@ -43,6 +44,7 @@ func NewPlayer(race race.Race, class playerclass.PlayerClass) *player {
 		race:    race,
 		class:   class,
 		hitDice: hitDice,
+		effects: effect.EffectMap{},
 	}
 }
 
@@ -52,6 +54,53 @@ func (p *player) IsFriend() bool {
 
 func (p *player) IsAlive() bool {
 	return p.hp > 0
+}
+
+func (p *player) metabolize() {
+	if p.hunger > 0 {
+		p.hunger -= 2
+	}
+	if p.hunger <= 0 {
+		p.effects.Add(effect.Starving)
+	}
+}
+
+func (p *player) GetEffects() []effect.Effect {
+	return p.effects.AsOrderedList()
+}
+
+func (p *player) AddEffect(e effect.Effect) {
+	p.effects.Add(e)
+}
+
+func (p *player) RemoveEffect(e effect.Effect) {
+	p.effects.Remove(e)
+}
+
+func (p *player) handleDamageEffect(messages *[]actor.Message, e effect.Effect, d actor.Damage, m actor.Message) (isDead bool) {
+	if !p.effects.Has(e) {
+		return false
+	}
+	*messages = append(*messages, m)
+	dm, isDead := p.Damage(d)
+	*messages = append(*messages, dm)
+	return isDead
+}
+
+func (p *player) handleEffects() (messages []actor.Message, isDead bool) {
+	if p.handleDamageEffect(&messages, effect.Starving, actor.Damage(p.hp/10), "you are starving!") {
+		return messages, true
+	}
+	if p.handleDamageEffect(&messages, effect.Poisoned, actor.Damage(p.hpmax/10), "you are poisoned!") {
+		return messages, true
+	}
+	// NOTE: DRYじゃないけど、今後実装が多様になるので
+	return messages, isDead
+}
+
+func (p *player) BeforeAttack() (messages []actor.Message, isDead bool) {
+	p.metabolize()
+	return p.handleEffects()
 }
 
 func (p *player) Attack(t actor.Actor) (actor.Damage, []actor.Message) {
@@ -72,7 +121,7 @@ func (p *player) Damage(d actor.Damage) (message actor.Message, isDead bool) {
 }
 
 func (p *player) GetName() string {
-	return fmt.Sprintf("player, the %s %s", p.race, p.class)
+	return fmt.Sprintf("player the %s %s", p.race, p.class)
 }
 
 func (p *player) String() string {

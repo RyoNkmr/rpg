@@ -17,14 +17,21 @@ type battleUsecase struct {
 }
 
 type BattleUsecase interface {
-	HandleAttack(attacker, receiver actor.Actor, deathMes string) (isReceiverDead bool)
+	HandleAttack(attacker, receiver actor.Actor, deathMes string) (isReceiverDead bool, isAttackerDead bool)
 }
 
 func NewBattleUsecase(main output.MainPresenter, status output.StatusPresenter, inventory output.InventoryPresenter) *battleUsecase {
 	return &battleUsecase{main, status, inventory}
 }
 
-func (u *battleUsecase) HandleAttack(attacker, receiver actor.Actor, deathMes string) (isReceiverDead bool) {
+func (u *battleUsecase) HandleAttack(attacker, receiver actor.Actor, deathMes string) (isReceiverDead bool, isAttackerDead bool) {
+	bms, isAttackerDead := attacker.BeforeAttack()
+	u.main.AddLines(bms, 600*time.Millisecond)
+	u.status.Update()
+	if isAttackerDead {
+		return false, isAttackerDead
+	}
+
 	pad, ams := attacker.Attack(receiver)
 	dms, isReceiverDead := receiver.Damage(pad)
 
@@ -57,7 +64,7 @@ func (u *battleUsecase) HandleAttack(attacker, receiver actor.Actor, deathMes st
 		}
 	}
 
-	return isReceiverDead
+	return isReceiverDead, false
 }
 
 func (u *battleUsecase) handleConditionalMessage(isPositive bool, mes string) {

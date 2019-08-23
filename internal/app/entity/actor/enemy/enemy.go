@@ -4,20 +4,40 @@ import (
 	"fmt"
 
 	"github.com/RyoNkmr/rpg/internal/app/entity/actor"
+	"github.com/RyoNkmr/rpg/internal/app/entity/actor/effect"
 )
 
 type stats struct {
-	name  string
-	hp    actor.Hp
-	hpmax actor.Hp
-	sp    actor.Sp
-	spmax actor.Sp
-	exp   actor.Exp
+	name     string
+	hp       actor.Hp
+	hpmax    actor.Hp
+	sp       actor.Sp
+	spmax    actor.Sp
+	exp      actor.Exp
+	effects  effect.EffectMap
+	immunity effect.EffectMap
 }
 
 type Enemy interface {
 	actor.Actor
 	GetExp() actor.Exp
+}
+
+func (s *stats) GetEffects() []effect.Effect {
+	return s.effects.AsOrderedList()
+}
+
+func (s *stats) AddEffect(e effect.Effect) {
+	s.effects.Add(e)
+}
+
+func (s *stats) RemoveEffect(e effect.Effect) {
+	s.effects.Remove(e)
+}
+
+func (s *stats) BeforeAttack() (messages []actor.Message, isDead bool) {
+	// not implemented
+	return messages, false
 }
 
 func (s *stats) IsFriend() bool {

@@ -36,7 +36,7 @@ func (p *mainPresenter) AddLine(s string) {
 			continue
 		}
 		if i != lastIndex && ss[i+1] == "damage" {
-			word = "[red]" + word + " damage[white]"
+			word = "[red]" + word + " damage[-]"
 		}
 		fmt.Fprint(p.view, word+" ")
 		time.Sleep(30 * time.Millisecond)

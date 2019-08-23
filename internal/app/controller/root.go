@@ -56,11 +56,22 @@ func (c *rootController) run() {
 func (c *rootController) handleBattle(enemy enemy.Enemy) {
 	for {
 		c.sleep()
-		if c.battle.HandleAttack(c.player, enemy, "won") {
+		isEnemyDead, isPlayerDead := c.battle.HandleAttack(c.player, enemy, "won")
+		if isPlayerDead {
+			c.system.AddLine(c.player.GetName() + "はしんでしまった！")
 			return
 		}
+		if isEnemyDead {
+			return
+		}
+
 		c.sleep()
-		if c.battle.HandleAttack(enemy, c.player, "gameover") {
+		isPlayerDead, isEnemyDead = c.battle.HandleAttack(enemy, c.player, "G A M E O V E R")
+		if isPlayerDead {
+			c.system.AddLine(c.player.GetName() + "はしんでしまった！")
+			return
+		}
+		if isEnemyDead {
 			return
 		}
 	}

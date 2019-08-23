@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 
+	"github.com/RyoNkmr/rpg/internal/app/entity/actor/effect"
 	"github.com/RyoNkmr/rpg/internal/app/entity/actor/player"
 	"github.com/gdamore/tcell"
 	"github.com/rivo/tview"
@@ -24,6 +25,24 @@ func (p *statusPresenter) GetView() *tview.Table {
 	return p.table
 }
 
+func printEffects(l []effect.Effect) string {
+	estr := "-"
+	for _, e := range l {
+		s := e.String()
+		switch e.GetType() {
+		case effect.Buff:
+			s = fmt.Sprintf("[green]%s[-]", s)
+		case effect.Debuff:
+			s = fmt.Sprintf("[red]%s[-]", s)
+		}
+		estr += "," + s
+	}
+	if len(l) > 0 {
+		return estr[2:]
+	}
+	return estr
+}
+
 func (p *statusPresenter) Update() {
 	level := p.player.GetCurrentLevel()
 	exp := p.player.GetExpToNextLevel()
@@ -31,6 +50,7 @@ func (p *statusPresenter) Update() {
 
 	data := [...][2]string{
 		{"Level", fmt.Sprintf("%d", level)},
+		{"Effects", printEffects(p.player.GetEffects())},
 		{"Next Level", fmt.Sprintf("%d", exp)},
 		{"Hp", fmt.Sprintf("%d / %d", hp, hpmax)},
 		{"Sp", fmt.Sprintf("%d / %d", sp, spmax)},
@@ -38,6 +58,8 @@ func (p *statusPresenter) Update() {
 	}
 
 	colors := [...][2]tcell.Color{
+		{tcell.ColorWhite, tcell.ColorWhite},
+		{tcell.ColorWhite, tcell.ColorDefault},
 		{tcell.ColorWhite, tcell.ColorWhite},
 		{tcell.ColorWhite, tcell.ColorWhite},
 		{tcell.ColorWhite, getPercentColor(hp, hpmax)},

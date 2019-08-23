@@ -2,6 +2,7 @@ package enemy
 
 import (
 	"github.com/RyoNkmr/rpg/internal/app/entity/actor"
+	"github.com/RyoNkmr/rpg/internal/app/entity/actor/effect"
 	"github.com/RyoNkmr/rpg/internal/app/entity/dice"
 )
 
@@ -11,14 +12,13 @@ type snake struct {
 }
 
 func NewSnake() *snake {
-	// d := dice.NewDice(3, 6)
-	// hp := int64(d.Cast())
+	d := dice.NewDice(3, 6)
+	hp := int64(d.Cast())
 	e := &stats{
-		// hp:   hp,
-		hp:   1,
-		name: "snake",
-		// exp:  actor.Exp(hp),
-		exp: 11,
+		hp:      hp,
+		name:    "snake",
+		exp:     actor.Exp(hp),
+		effects: effect.EffectMap{},
 	}
 	return &snake{
 		stats:      e,
@@ -31,8 +31,9 @@ func (e *snake) Attack(t actor.Actor) (d actor.Damage, ms []actor.Message) {
 	ms = append(ms, "snake bites you.")
 	d = 1
 
-	if e.attackDice.Cast() >= 3 {
-		ms = append(ms, "snake bites you.")
+	if e.attackDice.Cast() >= 1 {
+		ms = append(ms, "snake poisoned you.")
+		t.AddEffect(effect.Poisoned)
 		d += 1
 	}
 

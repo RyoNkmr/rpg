@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/RyoNkmr/rpg/internal/app/entity"
 	"github.com/RyoNkmr/rpg/internal/app/entity/actor"
 	"github.com/RyoNkmr/rpg/internal/app/entity/actor/enemy"
 	"github.com/RyoNkmr/rpg/internal/app/entity/actor/player"
@@ -14,14 +15,49 @@ type battleUsecase struct {
 	main      output.MainPresenter
 	status    output.StatusPresenter
 	inventory output.InventoryPresenter
+	command   output.CommandPresenter
 }
 
 type BattleUsecase interface {
+	WaitForCommands(player player.Player, enemy enemy.Enemy) (isPlayerDead, isEnemyDead bool)
 	HandleAttack(attacker, receiver actor.Actor, deathMes string) (isReceiverDead bool, isAttackerDead bool)
+	HandlePray(player player.Player)
 }
 
-func NewBattleUsecase(main output.MainPresenter, status output.StatusPresenter, inventory output.InventoryPresenter) *battleUsecase {
-	return &battleUsecase{main, status, inventory}
+func NewBattleUsecase(main output.MainPresenter, status output.StatusPresenter, inventory output.InventoryPresenter, command output.CommandPresenter) *battleUsecase {
+	return &battleUsecase{main, status, inventory, command}
+}
+
+func (u *battleUsecase) WaitForCommands(player player.Player, enemy enemy.Enemy) (isPlayerDead, isEnemyDead bool) {
+	ch := make(chan bool, 2)
+	atk := &entity.Command{
+		Text:        "Attack",
+		ShortCutKey: 'a',
+		Callback: func() {
+			isEnemyDead, isPlayerDead := u.HandleAttack(player, enemy, "won")
+			ch <- isEnemyDead
+			ch <- isPlayerDead
+		},
+	}
+
+	pry := &entity.Command{
+		Text:        "Prey",
+		ShortCutKey: 'p',
+		Callback: func() {
+			u.HandlePray(player)
+			ch <- false
+			ch <- false
+		},
+	}
+
+	commands := []*entity.Command{atk, pry}
+	u.command.WaitFor(commands)
+	isPlayerDead, isEnemyDead = <-ch, <-ch
+	return isPlayerDead, isEnemyDead
+}
+
+func (u *battleUsecase) HandlePray(player player.Player) {
+	u.main.AddLine(player.GetName() + " prayed for yourself.")
 }
 
 func (u *battleUsecase) HandleAttack(attacker, receiver actor.Actor, deathMes string) (isReceiverDead bool, isAttackerDead bool) {

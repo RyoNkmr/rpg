@@ -3,6 +3,7 @@ package output
 import (
 	"time"
 
+	"github.com/RyoNkmr/rpg/internal/app/entity"
 	"github.com/rivo/tview"
 )
 
@@ -29,5 +30,7 @@ type InventoryPresenter interface {
 }
 
 type CommandPresenter interface {
-	GetView() *tview.Box
+	GetView() *tview.List
+	Clear()
+	WaitFor([]*entity.Command)
 }

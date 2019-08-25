@@ -91,7 +91,7 @@ func (p *player) handleEffects() (messages []actor.Message, isDead bool) {
 	if p.handleDamageEffect(&messages, effect.Starving, actor.Damage(p.hp/10), "you are starving!") {
 		return messages, true
 	}
-	if p.handleDamageEffect(&messages, effect.Poisoned, actor.Damage(p.hpmax/10), "you are poisoned!") {
+	if p.handleDamageEffect(&messages, effect.Poisoned, actor.Damage(p.hpmax/12), "you are poisoned!") {
 		return messages, true
 	}
 	// NOTE: DRYじゃないけど、今後実装が多様になるので

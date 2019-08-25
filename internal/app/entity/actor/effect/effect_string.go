@@ -10,11 +10,12 @@ func _() {
 	var x [1]struct{}
 	_ = x[Starving-0]
 	_ = x[Poisoned-1]
+	_ = x[Bleeding-2]
 }
 
-const _Effect_name = "StarvingPoisoned"
+const _Effect_name = "StarvingPoisonedBleeding"
 
-var _Effect_index = [...]uint8{0, 8, 16}
+var _Effect_index = [...]uint8{0, 8, 16, 24}
 
 func (i Effect) String() string {
 	if i < 0 || i >= Effect(len(_Effect_index)-1) {
